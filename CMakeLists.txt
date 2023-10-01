@@ -13,14 +13,18 @@ project ("GitExtended")
 
 include ("$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 
+enable_testing()
+
 # Packages
 find_package(absl CONFIG REQUIRED)
+find_package(GTest CONFIG REQUIRED)
 
 set(SOURCES
   GitExtended.cpp
   GitExtended.h
   Main.cpp
   pch.h
+  tests.cpp
 ) 
 
 # Add source to this project's executable.
@@ -33,8 +37,10 @@ endif()
 # pch.h
 target_precompile_headers(GitExtended PUBLIC pch.h)
 
-# Linking packages
-target_link_libraries(GitExtended PRIVATE absl::strings)
+# Linking libraries
+target_link_libraries(GitExtended PRIVATE absl::strings GTest::gtest GTest::gtest_main)
 
 
 # TODO: Add tests and install targets if needed.
+add_test(AllTests GitExtended)
+
