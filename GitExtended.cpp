@@ -9,5 +9,5 @@ CGitExtended::~CGitExtended() {
 }
 
 void CGitExtended::sayHello() {
-	cout << "Hello" << endl;
+  std::cout << "Hello" << std::endl;
 }

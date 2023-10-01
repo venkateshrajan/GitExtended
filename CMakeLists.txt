@@ -11,6 +11,11 @@ endif()
 
 project ("GitExtended")
 
+include ("$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+
+# Packages
+find_package(absl CONFIG REQUIRED)
+
 set(SOURCES
   GitExtended.cpp
   GitExtended.h
@@ -25,6 +30,11 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET GitExtended PROPERTY CXX_STANDARD 20)
 endif()
 
+# pch.h
 target_precompile_headers(GitExtended PUBLIC pch.h)
+
+# Linking packages
+target_link_libraries(GitExtended PRIVATE absl::strings)
+
 
 # TODO: Add tests and install targets if needed.

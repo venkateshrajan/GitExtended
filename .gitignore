@@ -1052,3 +1052,7 @@ dkms.conf
 *.uf2
 # Raspberry Pi Pico disassembler file
 *.dis
+
+# vcpkg install directory
+vcpkg_installed/
+
