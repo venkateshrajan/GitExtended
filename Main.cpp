@@ -13,12 +13,6 @@ int main() {
 
   std::cout << "Joined string: " << s << std:: endl;
   
-  std::vector<std::string> output;
-  util::executeCommand("printf 'hello\\nworld'", output);
-
-  for (std::string line : output)
-    std::cout << line << std::endl;
-
   return 0;
 }
 
