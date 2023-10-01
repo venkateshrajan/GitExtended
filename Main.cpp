@@ -2,7 +2,7 @@
 
 #include "absl/strings/str_join.h"
 #include "GitExtended.h"
-#include <linux/limits.h>
+#include "utilities.h"
 
 int main() {
   CGitExtended git;
@@ -13,13 +13,11 @@ int main() {
 
   std::cout << "Joined string: " << s << std:: endl;
   
-  std::FILE *fp = popen("ls", "r");
-  if (fp == NULL)
-    return 1;
+  std::vector<std::string> output;
+  util::executeCommand("printf 'hello\\nworld'", output);
 
-  char path[PATH_MAX] = { 0 };
-  while (fgets(path, PATH_MAX, fp) != NULL)
-    std::cout << path;
+  for (std::string line : output)
+    std::cout << line << std::endl;
 
   return 0;
 }

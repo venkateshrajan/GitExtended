@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : CMake project for GitExtended, include source and define
 # project specific logic here.
 #
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required (VERSION 3.22)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -10,37 +10,36 @@ if (POLICY CMP0141)
 endif()
 
 project ("GitExtended")
-
 include ("$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
-
-enable_testing()
 
 # Packages
 find_package(absl CONFIG REQUIRED)
-find_package(GTest CONFIG REQUIRED)
 
 set(SOURCES
   GitExtended.cpp
   GitExtended.h
-  Main.cpp
   pch.h
-  tests.cpp
+  utilities.cpp
+  utilities.h
 ) 
 
-# Add source to this project's executable.
-add_executable (GitExtended ${SOURCES})
+add_executable (gitex ${SOURCES} Main.cpp)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET GitExtended PROPERTY CXX_STANDARD 20)
+  set_property(TARGET gitex PROPERTY CXX_STANDARD 20)
 endif()
 
-# pch.h
-target_precompile_headers(GitExtended PUBLIC pch.h)
-
-# Linking libraries
-target_link_libraries(GitExtended PRIVATE absl::strings GTest::gtest GTest::gtest_main)
+target_precompile_headers(gitex PUBLIC pch.h)
+target_link_libraries(gitex PRIVATE absl::strings)
 
 
 # TODO: Add tests and install targets if needed.
-add_test(AllTests GitExtended)
+include (CTest)
+find_package(GTest CONFIG REQUIRED)
+add_executable(gitex_test ${SOURCES} tests.cpp)
 
+target_precompile_headers(gitex_test PUBLIC pch.h)
+target_link_libraries(gitex_test PRIVATE absl::strings GTest::gtest GTest::gtest_main)
+
+include(GoogleTest)
+gtest_discover_tests(gitex_test)
