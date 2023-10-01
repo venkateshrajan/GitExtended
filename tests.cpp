@@ -9,8 +9,8 @@ TEST(UtilitiesTest, executeCommandReadsOutputCorrectly) {
 
   EXPECT_EQ(ret, 0);
   EXPECT_EQ(output.size(), 2);
-  // executeCommand doesn't expect toe trim the strings 
-  // that's the job of the caller
+  // executeCommand doesn't expect to be trimming the strings 
+  // That's the job of the caller
   EXPECT_STREQ(output[0].c_str(), "hello\n");
   EXPECT_STREQ(output[1].c_str(), "world\n");
 }
