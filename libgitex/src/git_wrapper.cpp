@@ -24,7 +24,10 @@ bool CCommandGitOp::diff_namestatus(FileStatusMap& files) {
   }
 
   // TODO: Add logs
-  if (!parse_status(output, files)) return false;
+  FileStatusMap result;
+  if (!parse_status(output, result)) return false;
+
+  files = result;
 
   return true;
 }
@@ -72,7 +75,7 @@ bool CCommandGitOp::parse_status(const std::vector<std::string>& files,
 
   for(std::string file_line : files) {
     std::vector<std::string> splits;
-    boost::split(splits, file_line, boost::is_any_of(" \t"));
+    boost::split(splits, file_line, boost::is_any_of(" \t\n\r"));
 
     // TODO: Add logs
     if (splits.size() != 2) return false;
@@ -99,7 +102,6 @@ bool CCommandGitOp::parse_status(const std::vector<std::string>& files,
     default:
         // TODO: Add logs
         return false;
-      break;
     }
   }
 
