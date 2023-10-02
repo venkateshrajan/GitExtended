@@ -1,30 +1,26 @@
 #include "pch.h"
 
-#include "absl/strings/str_join.h"
-#include "boost/process.hpp"
-#include "GitExtended.h"
-#include "utilities.h"
+#include <boost/program_options.hpp>
+namespace po = boost::program_options;
 
-using namespace boost::process;
+int main(int argc, char *argv[]) {
+  po::options_description desc("Allowed options");
+  desc.add_options()
+    ("help", "prints this message")
+    ("copy", "copies git files to the specified location")
+    ("diff", "operations on top of git diff")
+    ("init", "initializes the git repository")
+  ;
 
-int main() {
-  CGitExtended git;
-  git.sayHello();
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+  po::notify(vm);
 
-  std::vector<std::string> v = {"foo", "bar", "baz"};
-  std::string s = absl::StrJoin(v, "-");
+  if (vm.count("help") || argc <= 1) {
+    std::cout << desc << std::endl;
+    return 0;
+  }
 
-  std::cout << "Joined string: " << s << std:: endl;
-
-  ipstream pipe_stream;
-  child c("gcc --version", std_out > pipe_stream);
-
-  std::string line;
-  while (pipe_stream && std::getline(pipe_stream, line) && !line.empty())
-    std::cerr << line << std::endl;
-  
-  c.wait();
-
-  return 0;
+  std::cout << "hello world!" << std::endl;
 }
 
