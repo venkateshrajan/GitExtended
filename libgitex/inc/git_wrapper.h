@@ -22,7 +22,9 @@ public:
   virtual bool init() override;
 
 protected:
-  bool runCommand(const std::string& command, std::vector<std::string>& output);
+  int runCommand(const std::string& arguments, 
+                 std::vector<std::string>& output,
+                 std::vector<std::string>& error);
 
 protected:
   std::string gitcli;

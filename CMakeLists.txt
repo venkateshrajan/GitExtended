@@ -4,6 +4,8 @@ project ("GitExtended")
 
 include ("$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 
+find_package(Boost 1.83.0 COMPONENTS program_options)
+
 add_subdirectory(gitex)
 add_subdirectory(libgitex)
 add_subdirectory(tests)
