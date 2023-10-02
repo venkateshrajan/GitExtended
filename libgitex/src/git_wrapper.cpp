@@ -1,7 +1,10 @@
+#include "boost/algorithm/string/classification.hpp"
+#include "boost/algorithm/string/split.hpp"
 #include "pch.h"
 #include "git_wrapper.h"
 
 #include <boost/process.hpp>
+#include <filesystem>
 namespace bp = boost::process;
 
 namespace gitex {
@@ -10,14 +13,18 @@ CCommandGitOp::CCommandGitOp(const std::string& gitcli) :
   gitcli(gitcli) {}
 
 
-bool CCommandGitOp::diff_namestatus(std::vector<std::string>& files) {
+bool CCommandGitOp::diff_namestatus(FileStatusMap& files) {
+  std::vector<std::string> output;
   std::vector<std::string> error;
-  if (runCommand(files, error, "diff", "--name-status") != 0) {
+  if (runCommand(output, error, "diff", "--name-status") != 0) {
     // TODO: Add logs
     // for (std::string err: error)
     //   std::cout << err << std::endl;
     return false;
   }
+
+  // TODO: Add logs
+  if (!parse_status(output, files)) return false;
 
   return true;
 }
@@ -57,6 +64,46 @@ int CCommandGitOp::runCommand(std::vector<std::string>& output,
   c.wait();
 
   return c.exit_code();
+}
+
+
+bool CCommandGitOp::parse_status(const std::vector<std::string>& files, 
+                  FileStatusMap& file_statuses) {
+
+  for(std::string file_line : files) {
+    std::vector<std::string> splits;
+    boost::split(splits, file_line, boost::is_any_of(" \t"));
+
+    // TODO: Add logs
+    if (splits.size() != 2) return false;
+
+    switch(splits[0][0]) {
+    case 'M':
+        file_statuses[splits[1]] = status::status_modified;
+        break;
+    case 'C':
+        file_statuses[splits[1]] = status::status_copy_edit;
+        break;
+    case 'R':
+        file_statuses[splits[1]] = status::status_rename_edit;
+        break;
+    case 'A':
+        file_statuses[splits[1]] = status::status_added;
+        break;
+    case 'D':
+        file_statuses[splits[1]] = status::status_deleted;
+        break;
+    case 'U':
+        file_statuses[splits[1]] = status::status_unmerged;
+        break;
+    default:
+        // TODO: Add logs
+        return false;
+      break;
+    }
+  }
+
+  return true;
 }
 
 

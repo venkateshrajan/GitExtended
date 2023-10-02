@@ -25,14 +25,14 @@ int main(int argc, char *argv[]) {
 
   gitex::CCommandGitOp git("git");
 
-  std::vector<std::string> files;
+  gitex::FileStatusMap files;
   if (!git.diff_namestatus(files)) {
     std::cout<< "diff name status failed" << std:: endl;
     return 1;
   }
 
-  for (std::string file : files)
-    std::cout<< file << std::endl;
+  for (auto const& [file, status] : files)
+    std::cout<< file << status << std::endl;
 
   return 0;
 }
