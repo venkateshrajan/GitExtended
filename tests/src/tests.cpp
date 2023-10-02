@@ -6,12 +6,19 @@
 class CommandGitFixture : public gitex::CCommandGitOp, public testing::Test {
 public:
   CommandGitFixture() : gitex::CCommandGitOp("git") {}
+protected:
+  template<typename... Args>
+  int runCommand(std::vector<std::string>& output,
+                 std::vector<std::string>& error,
+                 Args... args) {
+    return gitex::CCommandGitOp::runCommand(output, error, args...);
+  }
 };
 
 TEST_F(CommandGitFixture, runCommandTest) {
   std::vector<std::string> output;
   std::vector<std::string> error;
-  int ret = runCommand("--version", output, error);
+  int ret = runCommand(output, error, "--version");
 
   ASSERT_EQ(ret, 0);
   ASSERT_EQ(output.size(), 1);

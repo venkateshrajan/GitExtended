@@ -1,6 +1,8 @@
 #include "pch.h"
 
 #include <boost/program_options.hpp>
+#include <git_wrapper.h>
+
 namespace po = boost::program_options;
 
 int main(int argc, char *argv[]) {
@@ -21,6 +23,17 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  std::cout << "hello world!" << std::endl;
+  gitex::CCommandGitOp git("git");
+
+  std::vector<std::string> files;
+  if (!git.diff_namestatus(files)) {
+    std::cout<< "diff name status failed" << std:: endl;
+    return 1;
+  }
+
+  for (std::string file : files)
+    std::cout<< file << std::endl;
+
+  return 0;
 }
 

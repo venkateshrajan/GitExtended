@@ -9,9 +9,7 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 
   set(SOURCES
-    GitExtended.cpp
     git_wrapper.cpp
-    utilities.cpp
   ) 
 
   add_library(libgitex ${SOURCES})

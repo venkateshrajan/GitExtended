@@ -9,21 +9,40 @@ namespace gitex {
 CCommandGitOp::CCommandGitOp(const std::string& gitcli) :
   gitcli(gitcli) {}
 
-bool CCommandGitOp::diff_nameonly(std::vector<std::string>& files) {
+
+bool CCommandGitOp::diff_namestatus(std::vector<std::string>& files) {
+  std::vector<std::string> error;
+  if (runCommand(files, error, "diff", "--name-status") != 0) {
+    // TODO: Add logs
+    // for (std::string err: error)
+    //   std::cout << err << std::endl;
+    return false;
+  }
+
   return true;
 }
 
+
 bool CCommandGitOp::init() {
-  return true; 
+  std::vector<std::string> output;
+  std::vector<std::string> error;
+  if (runCommand(output, error, "init") != 0) {
+    // TODO: Add logs
+    return false;
+  }
+
+  return true;
 }
 
-int CCommandGitOp::runCommand(const std::string& arguments, 
-               std::vector<std::string>& output,
-               std::vector<std::string>& error) {
+
+template<typename... Args>
+int CCommandGitOp::runCommand(std::vector<std::string>& output,
+               std::vector<std::string>& error,
+               Args... args) {
   bp::ipstream out_stream;
   bp::ipstream err_stream;
   bp::child c(bp::search_path(gitcli.c_str()), 
-              arguments.c_str(), 
+              args..., 
               bp::std_out > out_stream, 
               bp::std_err > err_stream);
 
@@ -39,5 +58,6 @@ int CCommandGitOp::runCommand(const std::string& arguments,
 
   return c.exit_code();
 }
+
 
 }
