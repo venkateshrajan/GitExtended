@@ -1,38 +1,50 @@
 #include "pch.h"
 
-#include <boost/program_options.hpp>
+#include <args.hxx>
 #include <git_wrapper.h>
 
-namespace po = boost::program_options;
+
+void DiffCommand(args::Subparser &parser) {
+  args::ValueFlag<std::string> copy(parser, 
+                                    "", 
+                                    "Copy diff files to the specified location",
+                                    {'c', "copy"});
+  args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
+  parser.Parse();
+
+  if(copy) {
+    std::cout << "Copy " << args::get(copy) << std::endl;
+  } else {
+    std::cout << "Argument required: use 'gitex diff -h' to get help" << std::endl;
+  }
+}
 
 int main(int argc, char *argv[]) {
-  po::options_description desc("Allowed options");
-  desc.add_options()
-    ("help", "prints this message")
-    ("copy", "copies git files to the specified location")
-    ("diff", "operations on top of git diff")
-    ("init", "initializes the git repository")
-  ;
+  args::ArgumentParser parser(
+    "Git extended operations", 
+    "'gitex command -h' to read about a specfic command");
+  args::Group commands(parser, "commands");
+  args::Command diff(commands, "diff", "diff related operations", &DiffCommand);
+  args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
+  args::CompletionFlag completion(parser, {"complete"});
 
-  po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
-  po::notify(vm);
-
-  if (vm.count("help") || argc <= 1) {
-    std::cout << desc << std::endl;
+  try {
+    parser.ParseCLI(argc, argv);
+  } catch (const args::Completion& e) {
+    std::cout << e.what();
     return 0;
-  }
-
-  gitex::CGitCommand git("git");
-
-  gitex::FileStatusMap files;
-  if (!git.diff_namestatus(files)) {
-    std::cout<< "diff name status failed" << std:: endl;
+  } catch (const args::Help&) {
+    std::cout << parser;
+    return 0;
+  } catch (const args::ParseError& e) {
+    std::cerr << e.what() << std::endl;
+    std::cerr << parser;
+    return 1;
+  } catch (const args::ValidationError& e) {
+    std::cerr << e.what() << std::endl;
+    std::cerr << parser;
     return 1;
   }
-
-  for (auto const& [file, status] : files)
-    std::cout<< file << status << std::endl;
 
   return 0;
 }

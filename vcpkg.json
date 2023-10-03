@@ -3,6 +3,7 @@
   "name": "git-extended",
   "version": "0.1.0",
   "dependencies": [
+    "args",
     "boost-algorithm",
     "boost-process",
     "boost-program-options",
