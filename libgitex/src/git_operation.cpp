@@ -2,6 +2,7 @@
 #include "git_operation.h"
 
 #include "git_wrapper.h"
+#include <glog/logging.h>
 
 namespace gitex {
 
@@ -11,22 +12,30 @@ IGitOperation::IGitOperation() {
 
 
 bool IGitOperation::run() {
-  // TODO: Add logs
-  if (!prepare()) return false;
+  if (!prepare()) {
+    LOG(ERROR) << "Prepare failed";
+    return false;
+  }
 
-  // TODO: Add logs
-  if (!process()) return false;
-  //
-  // TODO: Add logs
-  if (!finalize()) return false;
+  if (!process()) {
+    LOG(ERROR) << "Process failed";
+    return false;
+  }
+
+  if (!finalize()) {
+    LOG(ERROR) << "Finalize failed";
+    return false;
+  }
 
   return true;
 }
 
 
 bool IGitOperation::prepare() {
-  // TODO: Add logs
-  if (!git->root(root)) return false;
+  if (!git->root(root)) {
+    LOG(ERROR) << "Failed to get the root path";
+    return false;
+  }
 
   return true;
 }

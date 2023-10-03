@@ -4,6 +4,7 @@
 #include "boost/algorithm/string/classification.hpp"
 #include "boost/algorithm/string/split.hpp"
 #include "boost/process.hpp"
+#include <glog/logging.h>
 
 namespace bp = boost::process;
 
@@ -16,12 +17,18 @@ CGitCommand::CGitCommand(const std::string& gitcli) :
 bool CGitCommand::diff_namestatus(FileStatusMap& files) {
   std::vector<std::string> output;
   std::vector<std::string> error;
-  // TODO: Add logs
-  if (runCommand(output, error, "diff", "--name-status") != 0) return false;
+  if (runCommand(output, error, "diff", "--name-status") != 0) {
+    LOG(ERROR) << "runCommand failed for " << gitcli << 
+      " diff --namestatus. Error lines: ";
+    for (const auto& err : error) LOG(ERROR) << "\t" << err;
+    return false;
+  }
 
-  // TODO: Add logs
   FileStatusMap result;
-  if (!parse_status(output, result)) return false;
+  if (!parse_status(output, result)) {
+    LOG(ERROR) << "Failed to parse result";
+    return false;
+  }
 
   files = result;
 
@@ -32,8 +39,11 @@ bool CGitCommand::diff_namestatus(FileStatusMap& files) {
 bool CGitCommand::init() {
   std::vector<std::string> output;
   std::vector<std::string> error;
-  // TODO: Add logs
-  if (runCommand(output, error, "init") != 0) return false;
+  if (runCommand(output, error, "init") != 0) {
+    LOG(ERROR) << "runCommand failed for " << gitcli << " init. Error lines: ";
+    for (const auto& err : error) LOG(ERROR) << "\t" << err;
+    return false;
+  }
 
   return true;
 }
@@ -42,11 +52,18 @@ bool CGitCommand::init() {
 bool CGitCommand::root(std::string& path) {
   std::vector<std::string> output;
   std::vector<std::string> error;
-  // TODO: Add logs
-  if (runCommand(output, error, "rev-parse", "--show-toplevel") != 0) return false;
+  if (runCommand(output, error, "rev-parse", "--show-toplevel") != 0) {
+    LOG(ERROR) << "runCommand failed for " << gitcli 
+      << " rev-parse --show-toplevel Error lines: ";
+    for (const auto& err : error) LOG(ERROR) << "\t" << err;
+    return false;
+  }
 
-  // TODO: Add logs
-  if (output.size() != 1) return false;
+  if (output.size() != 1) {
+    LOG(ERROR) << "Expected to receive only one line. Received "
+      << output.size() << "lines";
+    return false;
+  }
 
   path = output[0];
 
@@ -86,8 +103,10 @@ bool CGitCommand::parse_status(const std::vector<std::string>& files,
     std::vector<std::string> splits;
     boost::split(splits, file_line, boost::is_any_of(" \t\n\r"));
 
-    // TODO: Add logs
-    if (splits.size() != 2) return false;
+    if (splits.size() != 2) {
+      LOG(ERROR) << "Expected two fields. line: " << file_line;
+      return false;
+    }
 
     switch(splits[0][0]) {
     case 'M':
@@ -109,7 +128,7 @@ bool CGitCommand::parse_status(const std::vector<std::string>& files,
         file_statuses[splits[1]] = status::status_unmerged;
         break;
     default:
-        // TODO: Add logs
+        LOG(ERROR) << "Invalid file status: " << splits[0][0];
         return false;
     }
   }

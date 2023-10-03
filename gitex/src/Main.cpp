@@ -1,6 +1,7 @@
 #include "pch.h"
 
-#include <args.hxx>
+#include "args.hxx"
+#include "glog/logging.h"
 #include "git_operation.h"
 
 void DiffCommand(args::Subparser &parser) {
@@ -21,6 +22,8 @@ void DiffCommand(args::Subparser &parser) {
 }
 
 int main(int argc, char *argv[]) {
+  google::InitGoogleLogging(argv[0]);
+
   args::ArgumentParser parser(
     "Git extended operations", 
     "'gitex command -h' to read about a specfic command");

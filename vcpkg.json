@@ -7,6 +7,7 @@
     "boost-algorithm",
     "boost-process",
     "boost-program-options",
+    "glog",
     "gtest"
   ]
 }
