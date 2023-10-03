@@ -3,6 +3,7 @@
 project ("GitExtended")
 
 include ("$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Boost 1.83.0 COMPONENTS program_options)
 
