@@ -1,8 +1,7 @@
 #include "pch.h"
 
 #include <args.hxx>
-#include <git_wrapper.h>
-
+#include "git_operation.h"
 
 void DiffCommand(args::Subparser &parser) {
   args::ValueFlag<std::string> copy(parser, 
@@ -13,7 +12,9 @@ void DiffCommand(args::Subparser &parser) {
   parser.Parse();
 
   if(copy) {
-    std::cout << "Copy " << args::get(copy) << std::endl;
+    gitex::CGitDiffOperation diff(args::get(copy));
+    if (!diff.run())
+      std::cout << "gitex diff copy operation failed" << std::endl;
   } else {
     std::cout << "Argument required: use 'gitex diff -h' to get help" << std::endl;
   }

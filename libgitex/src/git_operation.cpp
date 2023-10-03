@@ -24,15 +24,21 @@ bool IGitOperation::run() {
 }
 
 
-
-CGitDiffOperation::CGitDiffOperation() :
-  IGitOperation() {
-  
+bool IGitOperation::prepare() {
+  return true;
 }
 
 
-bool CGitDiffOperation::prepare()  {
+bool IGitOperation::finalize() {
   return true;
+}
+
+
+
+CGitDiffOperation::CGitDiffOperation(const std::string& copyPath) :
+  IGitOperation(),
+  copyPath(copyPath) {
+  
 }
 
 
@@ -40,9 +46,5 @@ bool CGitDiffOperation::process()  {
   return true;
 }
 
-
-bool CGitDiffOperation::finalize()  {
-  return true;
-}
 
 }

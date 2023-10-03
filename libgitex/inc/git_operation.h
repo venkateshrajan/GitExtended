@@ -13,23 +13,22 @@ public:
 protected:
   IGitOperation();
 
-  virtual bool prepare() = 0;
+  virtual bool prepare();
   virtual bool process() = 0;
-  virtual bool finalize() = 0;
+  virtual bool finalize();
 
   std::shared_ptr<IGit> git;
+  std::string root;
 };
 
 class CGitDiffOperation : public IGitOperation{
 public:
-  CGitDiffOperation();
+  CGitDiffOperation(const std::string& path);
 
 protected:
-  virtual bool prepare() override;
   virtual bool process() override;
-  virtual bool finalize() override;
 
-  std::string root;
+  std::string copyPath;
 };
 
 }
