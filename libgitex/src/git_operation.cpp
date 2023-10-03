@@ -25,6 +25,9 @@ bool IGitOperation::run() {
 
 
 bool IGitOperation::prepare() {
+  // TODO: Add logs
+  if (!git->root(root)) return false;
+
   return true;
 }
 
@@ -43,6 +46,7 @@ CGitDiffOperation::CGitDiffOperation(const std::string& copyPath) :
 
 
 bool CGitDiffOperation::process()  {
+  std::cout<< root << " " << copyPath << std::endl;
   return true;
 }
 

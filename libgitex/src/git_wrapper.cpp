@@ -45,6 +45,11 @@ bool CGitCommand::root(std::string& path) {
   // TODO: Add logs
   if (runCommand(output, error, "rev-parse", "--show-toplevel") != 0) return false;
 
+  // TODO: Add logs
+  if (output.size() != 1) return false;
+
+  path = output[0];
+
   return true;
 }
 
