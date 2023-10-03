@@ -3,15 +3,15 @@
 
 #include "git_wrapper.h"
 
-class CommandGitFixture : public gitex::CCommandGitOp, public testing::Test {
+class CommandGitFixture : public gitex::CGitCommand, public testing::Test {
 public:
-  CommandGitFixture() : gitex::CCommandGitOp("git") {}
+  CommandGitFixture() : gitex::CGitCommand("git") {}
 protected:
   template<typename... Args>
   int runCommand(std::vector<std::string>& output,
                  std::vector<std::string>& error,
                  Args... args) {
-    return gitex::CCommandGitOp::runCommand(output, error, args...);
+    return gitex::CGitCommand::runCommand(output, error, args...);
   }
 };
 

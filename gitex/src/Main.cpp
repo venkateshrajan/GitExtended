@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  gitex::CCommandGitOp git("git");
+  gitex::CGitCommand git("git");
 
   gitex::FileStatusMap files;
   if (!git.diff_namestatus(files)) {

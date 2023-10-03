@@ -1,27 +1,23 @@
-#include "boost/algorithm/string/classification.hpp"
-#include "boost/algorithm/string/split.hpp"
 #include "pch.h"
 #include "git_wrapper.h"
 
-#include <boost/process.hpp>
-#include <filesystem>
+#include "boost/algorithm/string/classification.hpp"
+#include "boost/algorithm/string/split.hpp"
+#include "boost/process.hpp"
+
 namespace bp = boost::process;
 
 namespace gitex {
 
-CCommandGitOp::CCommandGitOp(const std::string& gitcli) :
+CGitCommand::CGitCommand(const std::string& gitcli) :
   gitcli(gitcli) {}
 
 
-bool CCommandGitOp::diff_namestatus(FileStatusMap& files) {
+bool CGitCommand::diff_namestatus(FileStatusMap& files) {
   std::vector<std::string> output;
   std::vector<std::string> error;
-  if (runCommand(output, error, "diff", "--name-status") != 0) {
-    // TODO: Add logs
-    // for (std::string err: error)
-    //   std::cout << err << std::endl;
-    return false;
-  }
+  // TODO: Add logs
+  if (runCommand(output, error, "diff", "--name-status") != 0) return false;
 
   // TODO: Add logs
   FileStatusMap result;
@@ -33,20 +29,28 @@ bool CCommandGitOp::diff_namestatus(FileStatusMap& files) {
 }
 
 
-bool CCommandGitOp::init() {
+bool CGitCommand::init() {
   std::vector<std::string> output;
   std::vector<std::string> error;
-  if (runCommand(output, error, "init") != 0) {
-    // TODO: Add logs
-    return false;
-  }
+  // TODO: Add logs
+  if (runCommand(output, error, "init") != 0) return false;
+
+  return true;
+}
+
+
+bool CGitCommand::root(std::string& path) {
+  std::vector<std::string> output;
+  std::vector<std::string> error;
+  // TODO: Add logs
+  if (runCommand(output, error, "rev-parse", "--show-toplevel") != 0) return false;
 
   return true;
 }
 
 
 template<typename... Args>
-int CCommandGitOp::runCommand(std::vector<std::string>& output,
+int CGitCommand::runCommand(std::vector<std::string>& output,
                std::vector<std::string>& error,
                Args... args) {
   bp::ipstream out_stream;
@@ -70,7 +74,7 @@ int CCommandGitOp::runCommand(std::vector<std::string>& output,
 }
 
 
-bool CCommandGitOp::parse_status(const std::vector<std::string>& files, 
+bool CGitCommand::parse_status(const std::vector<std::string>& files, 
                   FileStatusMap& file_statuses) {
 
   for(std::string file_line : files) {

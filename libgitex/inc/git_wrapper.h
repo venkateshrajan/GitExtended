@@ -2,6 +2,7 @@
 
 namespace gitex {
 
+
 enum status {
   status_modified,
   status_copy_edit,
@@ -11,27 +12,31 @@ enum status {
   status_unmerged
 };
 
+
 typedef std::unordered_map<std::string, status> FileStatusMap;
 
-class IGitOp {
+
+class IGit {
 public:
-  virtual ~IGitOp() = default;    
+  virtual ~IGit() = default;    
 
   virtual bool diff_namestatus(FileStatusMap& files) = 0;
   virtual bool init() = 0;
+  virtual bool root(std::string& path) = 0;
 
 protected:
-  IGitOp() = default;
+  IGit() = default;
 };
 
 
-class CCommandGitOp : public IGitOp {
+class CGitCommand : public IGit {
 public:
-  CCommandGitOp(const std::string& gitcli);
-  virtual ~CCommandGitOp() = default;
+  CGitCommand(const std::string& gitcli);
+  virtual ~CGitCommand() = default;
 
   virtual bool diff_namestatus(FileStatusMap& files) override;
   virtual bool init() override;
+  virtual bool root(std::string& path) override;
 
 protected:
   template<typename... Args>
@@ -45,5 +50,6 @@ protected:
 protected:
   std::string gitcli;
 };
+
 
 }
