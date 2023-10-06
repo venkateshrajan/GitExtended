@@ -14,7 +14,8 @@ CGitCommand::CGitCommand(const std::string& gitcli) :
   gitcli(gitcli) {}
 
 
-bool CGitCommand::diff_namestatus(FileStatusMap& files) {
+template<typename... Args>
+bool CGitCommand::diff_namestatus(FileStatusMap& files, Args... args) {
   std::vector<std::string> output;
   std::vector<std::string> error;
   if (runCommand(output, error, "diff", "--name-status") != 0) {

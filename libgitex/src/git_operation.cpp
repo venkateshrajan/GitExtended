@@ -11,18 +11,18 @@ IGitOperation::IGitOperation() {
 }
 
 
-bool IGitOperation::run() {
-  if (!prepare()) {
+bool IGitOperation::run(const std::vector<std::string>& arguments) {
+  if (!prepare(arguments)) {
     LOG(ERROR) << "Prepare failed";
     return false;
   }
 
-  if (!process()) {
+  if (!process(arguments)) {
     LOG(ERROR) << "Process failed";
     return false;
   }
 
-  if (!finalize()) {
+  if (!finalize(arguments)) {
     LOG(ERROR) << "Finalize failed";
     return false;
   }
@@ -31,7 +31,7 @@ bool IGitOperation::run() {
 }
 
 
-bool IGitOperation::prepare() {
+bool IGitOperation::prepare(const std::vector<std::string>& arguments) {
   if (!git->root(root)) {
     LOG(ERROR) << "Failed to get the root path";
     return false;
@@ -41,7 +41,7 @@ bool IGitOperation::prepare() {
 }
 
 
-bool IGitOperation::finalize() {
+bool IGitOperation::finalize(const std::vector<std::string>& arguments) {
   return true;
 }
 
@@ -54,8 +54,11 @@ CGitDiffOperation::CGitDiffOperation(const std::string& copyPath) :
 }
 
 
-bool CGitDiffOperation::process()  {
-  std::cout<< root << " " << copyPath << std::endl;
+bool CGitDiffOperation::process(const std::vector<std::string>& arguments)  {
+  std::cout<< root << " " << copyPath << " ";
+  for (const auto& arg : arguments) std::cout << arg << " ";
+  std::cout<< std::endl;
+
   return true;
 }
 

@@ -9,12 +9,16 @@ void DiffCommand(args::Subparser &parser) {
                                     "", 
                                     "Copy diff files to the specified location",
                                     {'c', "copy"});
+  args::PositionalList<std::string> arguments(parser,
+                      "arguments", "Arguments for git diff command");
   args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
   parser.Parse();
 
   if(copy) {
     gitex::CGitDiffOperation diff(args::get(copy));
-    if (!diff.run())
+    std::vector<std::string> vec_args;
+    if (arguments) vec_args = args::get(arguments);
+    if (!diff.run(vec_args))
       std::cout << "gitex diff copy operation failed" << std::endl;
   } else {
     std::cout << "Argument required: use 'gitex diff -h' to get help" << std::endl;

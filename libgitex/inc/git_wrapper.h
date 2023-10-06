@@ -20,7 +20,8 @@ class IGit {
 public:
   virtual ~IGit() = default;    
 
-  virtual bool diff_namestatus(FileStatusMap& files) = 0;
+  template<typename... Args>
+  bool diff_namestatus(FileStatusMap& files, Args... args);
   virtual bool init() = 0;
   virtual bool root(std::string& path) = 0;
 
