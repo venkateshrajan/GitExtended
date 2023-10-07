@@ -4,6 +4,7 @@ namespace gitex {
 
 class IGit;
 
+
 class IGitOperation {
 public:
   virtual ~IGitOperation() = default;
@@ -21,14 +22,18 @@ protected:
   std::string root;
 };
 
+
 class CGitDiffOperation : public IGitOperation{
 public:
   CGitDiffOperation(const std::string& path);
 
 protected:
   virtual bool process(const std::list<std::string>& arguments) override;
+  virtual bool process_item(const std::string& rel_path);
+  virtual std::string get_cvs_directory_name();
 
   std::string copyPath;
 };
+
 
 }

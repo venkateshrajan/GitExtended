@@ -3,11 +3,9 @@
 
 #include "boost/algorithm/string/classification.hpp"
 #include "boost/algorithm/string/split.hpp"
-#include "boost/process.hpp"
+#include "boost/algorithm/string/trim.hpp"
 #include "glog/logging.h"
 #include "utilities.h"
-
-namespace bp = boost::process;
 
 namespace gitex {
 
@@ -31,6 +29,15 @@ bool CGitCommand::diff_namestatus(FileStatusMap& files,
   FileStatusMap result;
   std::vector<std::string> output_vec;
   boost::split(output_vec, output, boost::is_any_of("\n"));
+  for (auto & item : output_vec) boost::trim(item);
+  output_vec.erase(
+    std::remove_if(
+      output_vec.begin(),
+      output_vec.end(),
+      [](std::string const& s) {
+        return s.empty();
+      }),
+    output_vec.end());
   if (!parse_status(output_vec, result)) {
     LOG(ERROR) << "Failed to parse result";
     return false;
