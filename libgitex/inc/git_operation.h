@@ -8,14 +8,14 @@ class IGitOperation {
 public:
   virtual ~IGitOperation() = default;
 
-  virtual bool run(const std::vector<std::string>& arguments);
+  virtual bool run(const std::list<std::string>& arguments);
 
 protected:
   IGitOperation();
 
-  virtual bool prepare(const std::vector<std::string>& arguments);
-  virtual bool process(const std::vector<std::string>& arguments) = 0;
-  virtual bool finalize(const std::vector<std::string>& arguments);
+  virtual bool prepare(const std::list<std::string>& arguments);
+  virtual bool process(const std::list<std::string>& arguments) = 0;
+  virtual bool finalize(const std::list<std::string>& arguments);
 
   std::shared_ptr<IGit> git;
   std::string root;
@@ -26,7 +26,7 @@ public:
   CGitDiffOperation(const std::string& path);
 
 protected:
-  virtual bool process(const std::vector<std::string>& arguments) override;
+  virtual bool process(const std::list<std::string>& arguments) override;
 
   std::string copyPath;
 };

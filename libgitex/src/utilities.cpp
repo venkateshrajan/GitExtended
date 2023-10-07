@@ -10,14 +10,14 @@ namespace asio = boost::asio;
 namespace gitex {
 
 int launch_process(const std::string &exe, 
-                   const std::vector<std::string> &arguments,
+                   const std::list<std::string> &arguments,
                    std::string& output) {
   std::string error;
   return launch_process(exe, arguments, output, error);
 }
 
 int launch_process(const std::string &exe, 
-                   const std::vector<std::string> &arguments,
+                   const std::list<std::string> &arguments,
                    std::string& output,
                    std::string& error) {
   asio::io_context ctx;

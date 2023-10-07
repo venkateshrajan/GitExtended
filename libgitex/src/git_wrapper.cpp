@@ -4,7 +4,8 @@
 #include "boost/algorithm/string/classification.hpp"
 #include "boost/algorithm/string/split.hpp"
 #include "boost/process.hpp"
-#include <glog/logging.h>
+#include "glog/logging.h"
+#include "utilities.h"
 
 namespace bp = boost::process;
 
@@ -14,19 +15,23 @@ CGitCommand::CGitCommand(const std::string& gitcli) :
   gitcli(gitcli) {}
 
 
-template<typename... Args>
-bool CGitCommand::diff_namestatus(FileStatusMap& files, Args... args) {
-  std::vector<std::string> output;
-  std::vector<std::string> error;
-  if (runCommand(output, error, "diff", "--name-status") != 0) {
-    LOG(ERROR) << "runCommand failed for " << gitcli << 
+bool CGitCommand::diff_namestatus(FileStatusMap& files,
+                       const std::list<std::string>& arguments) {
+  std::string output;
+  std::string error;
+  std::list<std::string> args_to_process{"diff", "--name-status"};
+  args_to_process.insert(args_to_process.end(), arguments.begin(), arguments.end());
+  if (gitex::launch_process(gitcli, args_to_process, output, error) != 0) {
+    LOG(ERROR) << "launch process failed for " << gitcli << 
       " diff --namestatus. Error lines: ";
-    for (const auto& err : error) LOG(ERROR) << "\t" << err;
+    LOG(ERROR) << error;
     return false;
   }
 
   FileStatusMap result;
-  if (!parse_status(output, result)) {
+  std::vector<std::string> output_vec;
+  boost::split(output_vec, output, boost::is_any_of("\n"));
+  if (!parse_status(output_vec, result)) {
     LOG(ERROR) << "Failed to parse result";
     return false;
   }
@@ -37,12 +42,14 @@ bool CGitCommand::diff_namestatus(FileStatusMap& files, Args... args) {
 }
 
 
-bool CGitCommand::init() {
-  std::vector<std::string> output;
-  std::vector<std::string> error;
-  if (runCommand(output, error, "init") != 0) {
-    LOG(ERROR) << "runCommand failed for " << gitcli << " init. Error lines: ";
-    for (const auto& err : error) LOG(ERROR) << "\t" << err;
+bool CGitCommand::init(const std::list<std::string>& arguments) {
+  std::string output;
+  std::string error;
+  std::list<std::string> args_to_process{"init"};
+  args_to_process.insert(args_to_process.end(), arguments.begin(), arguments.end());
+  if (gitex::launch_process(gitcli, args_to_process, output, error) != 0) {
+    LOG(ERROR) << "launch process failed for " << gitcli << " init. Error lines: ";
+    LOG(ERROR) << error;
     return false;
   }
 
@@ -50,13 +57,16 @@ bool CGitCommand::init() {
 }
 
 
-bool CGitCommand::root(std::string& path) {
-  std::vector<std::string> output;
-  std::vector<std::string> error;
-  if (runCommand(output, error, "rev-parse", "--show-toplevel") != 0) {
+bool CGitCommand::root(std::string& path, 
+                       const std::list<std::string>& arguments) {
+  std::string output;
+  std::string error;
+  std::list<std::string> args_to_process{"rev-parse", "--show-toplevel"};
+  args_to_process.insert(args_to_process.end(), arguments.begin(), arguments.end());
+  if (gitex::launch_process(gitcli, args_to_process, output, error) != 0) {
     LOG(ERROR) << "runCommand failed for " << gitcli 
       << " rev-parse --show-toplevel Error lines: ";
-    for (const auto& err : error) LOG(ERROR) << "\t" << err;
+    LOG(ERROR) << error;
     return false;
   }
 
@@ -69,31 +79,6 @@ bool CGitCommand::root(std::string& path) {
   path = output[0];
 
   return true;
-}
-
-
-template<typename... Args>
-int CGitCommand::runCommand(std::vector<std::string>& output,
-               std::vector<std::string>& error,
-               Args... args) {
-  bp::ipstream out_stream;
-  bp::ipstream err_stream;
-  bp::child c(bp::search_path(gitcli.c_str()), 
-              args..., 
-              bp::std_out > out_stream, 
-              bp::std_err > err_stream);
-
-  std::string line;
-  while (out_stream && std::getline(out_stream, line) && !line.empty())
-    output.push_back(line);
-
-  line.clear();
-  while (err_stream && std::getline(err_stream, line) && !line.empty())
-    error.push_back(line);
-
-  c.wait();
-
-  return c.exit_code();
 }
 
 
