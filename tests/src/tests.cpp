@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <gtest/gtest.h>
 
+/*
 #include "git_wrapper.h"
 
 class CommandGitFixture : public gitex::CGitCommand, public testing::Test {
@@ -68,6 +69,44 @@ TEST_F(CommandGitFixture, parse_status_failure_test2) {
 
   gitex::FileStatusMap statuses;
   ASSERT_FALSE(parse_status(input, statuses));
+}
+*/
+
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include "utilities.h"
+
+TEST(Utilites, launch_process_test) {
+  std::string output;
+  int ret = gitex::launch_process("git", {"--version"}, output);
+
+  ASSERT_EQ(ret, 0);
+  ASSERT_TRUE(!output.empty());
+  std::string expected_prefix = "git version";
+  ASSERT_TRUE(!output.compare(0, expected_prefix.size(), expected_prefix));
+}
+
+TEST(Utilites, launch_process_multilineoutput_test) {
+  std::string output;
+  int ret = gitex::launch_process("zsh", {"-c", "echo hello && echo world"}, output);
+
+  ASSERT_EQ(ret, 0);
+  ASSERT_TRUE(!output.empty());
+
+  std::vector<std::string> lines;
+  boost::split(lines, output, boost::is_any_of("\n"));
+  ASSERT_TRUE(!lines[0].compare("hello"));
+  ASSERT_TRUE(!lines[1].compare("world"));
+}
+
+TEST(Utilites, launch_process_error_test) {
+  std::string output;
+  std::string error;
+  int ret = gitex::launch_process("git", {"hello"}, output, error);
+
+  ASSERT_EQ(ret, 1);
+  ASSERT_TRUE(output.empty());
+  ASSERT_FALSE(error.empty());
 }
 
 int main (int argc, char *argv[]) {

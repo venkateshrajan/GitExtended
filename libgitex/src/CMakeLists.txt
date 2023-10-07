@@ -11,8 +11,9 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 
   set(SOURCES
-    git_operation.cpp
-    git_wrapper.cpp
+    # git_operation.cpp
+    # git_wrapper.cpp
+    utilities.cpp
   ) 
 
   add_library(libgitex ${SOURCES})
