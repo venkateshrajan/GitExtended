@@ -32,7 +32,7 @@ bool IGitOperation::run(const std::list<std::string>& arguments) {
 
 
 bool IGitOperation::prepare(const std::list<std::string>& arguments) {
-  if (!git->root(root, arguments)) {
+  if (!git->root(root, {})) {
     return false;
   }
 

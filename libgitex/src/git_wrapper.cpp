@@ -59,24 +59,17 @@ bool CGitCommand::init(const std::list<std::string>& arguments) {
 
 bool CGitCommand::root(std::string& path, 
                        const std::list<std::string>& arguments) {
-  std::string output;
   std::string error;
   std::list<std::string> args_to_process{"rev-parse", "--show-toplevel"};
   args_to_process.insert(args_to_process.end(), arguments.begin(), arguments.end());
-  if (gitex::launch_process(gitcli, args_to_process, output, error) != 0) {
+  if (gitex::launch_process(gitcli, args_to_process, path, error) != 0) {
     LOG(ERROR) << "runCommand failed for " << gitcli 
       << " rev-parse --show-toplevel Error lines: ";
     LOG(ERROR) << error;
     return false;
   }
 
-  if (output.size() != 1) {
-    LOG(ERROR) << "Expected to receive only one line. Received "
-      << output.size() << "lines";
-    return false;
-  }
-
-  path = output[0];
+  boost::trim(path);
 
   return true;
 }

@@ -3,6 +3,7 @@
 #include "args.hxx"
 #include "glog/logging.h"
 #include "git_operation.h"
+#include <iterator>
 
 void DiffCommand(args::Subparser &parser) {
   args::ValueFlag<std::string> copy(parser, 
@@ -15,11 +16,15 @@ void DiffCommand(args::Subparser &parser) {
   parser.Parse();
 
   if(copy) {
-    // gitex::CGitDiffOperation diff(args::get(copy));
+    gitex::CGitDiffOperation diff(args::get(copy));
     std::vector<std::string> vec_args;
     if (arguments) vec_args = args::get(arguments);
-    // if (!diff.run(vec_args))
-    //   std::cout << "gitex diff copy operation failed" << std::endl;
+    if (!diff.run(
+      std::list<std::string>(
+        std::make_move_iterator(std::begin(vec_args)),
+        std::make_move_iterator(std::end(vec_args)))
+    ))
+      std::cout << "gitex diff copy operation failed" << std::endl;
   } else {
     std::cout << "Argument required: use 'gitex diff -h' to get help" << std::endl;
   }
