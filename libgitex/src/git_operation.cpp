@@ -62,16 +62,11 @@ bool CGitDiffOperation::process(const std::list<std::string>& arguments)  {
   }
 
   for (auto const & [relPath, itemStatus]: files) {
-    if (itemStatus == status_deleted) {
-      LOG(INFO) << "Skipping " << relPath << " as it is a deleted";
-      continue;
-    }
-
     LOG(INFO) << "Processing " << relPath << " with status " << itemStatus;
-
     if (!process_item(relPath)) continue;
   }
 
+  LOG(INFO) << "Completed the diff command successfully";
   return true;
 }
 
