@@ -7,6 +7,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Boost 1.83.0 COMPONENTS program_options)
 
+set(CMAKE_CXX_STANDARD 20)
+
 add_subdirectory(gitex)
 add_subdirectory(libgitex)
 add_subdirectory(tests)
