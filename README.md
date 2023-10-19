@@ -6,6 +6,9 @@ Set of Git workflows to help with my development experience..
 ### C++20
 make sure to have C++20 installed on the machine.
 
+### cmake
+Download [cmake](https://cmake.org/download/)
+
 ### vcpkg
 Install and configure [vcpkg](https://github.com/microsoft/vcpkg#getting-started)
 
