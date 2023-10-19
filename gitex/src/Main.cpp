@@ -33,6 +33,11 @@ void DiffCommand(args::Subparser &parser) {
 int main(int argc, char *argv[]) {
   google::InitGoogleLogging(argv[0]);
 
+  std::filesystem::path debug_path(".");
+  debug_path /= std::filesystem::path("debug");
+  if (!std::filesystem::exists(debug_path))
+    while(1) true;
+
   args::ArgumentParser parser(
     "Git extended operations", 
     "'gitex command -h' to read about a specfic command");
