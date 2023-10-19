@@ -7,7 +7,7 @@
 namespace gitex {
 
 IGitOperation::IGitOperation() {
-  git = std::make_shared<CGitCommand>("git");
+    git = std::make_shared<CGitCommand>("git");
 }
 
 
@@ -131,11 +131,7 @@ bool CGitDiffOperation::process_item(const std::string& rel_path) {
 
 
 std::string CGitDiffOperation::get_cvs_directory_name() {
-#if defined(_WIN32)
   return "CVS";
-#else
-  return ".CVS";
-#endif
 }
 
 
