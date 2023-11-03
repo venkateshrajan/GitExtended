@@ -35,8 +35,8 @@ int main(int argc, char *argv[]) {
 
   std::filesystem::path debug_path(".");
   debug_path /= std::filesystem::path("debug");
-  if (!std::filesystem::exists(debug_path))
-    while(1) true;
+  if (std::filesystem::exists(debug_path))
+    while(true) sleep(1000);
 
   args::ArgumentParser parser(
     "Git extended operations", 
