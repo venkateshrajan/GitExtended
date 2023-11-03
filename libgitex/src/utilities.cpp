@@ -4,7 +4,7 @@
 #include "boost/process/v2.hpp"
 #include "boost/asio.hpp"
 
-namespace proc = boost::process::v2;
+namespace boost_proc = boost::process::v2;
 namespace asio = boost::asio;
 
 namespace gitex {
@@ -24,8 +24,8 @@ int launch_process(const std::string &exe,
   asio::readable_pipe o{ctx};
   asio::readable_pipe e{ctx};
 
-  const auto exe_found = proc::environment::find_executable(exe);
-  proc::process c{ctx, exe_found, arguments, proc::process_stdio{nullptr, o, e}};
+  const auto exe_found = boost_proc::environment::find_executable(exe);
+  boost_proc::process c{ctx, exe_found, arguments, boost_proc::process_stdio{nullptr, o, e}};
 
   boost::system::error_code ec;
   auto sz = asio::read(o, asio::dynamic_buffer(output), ec);
