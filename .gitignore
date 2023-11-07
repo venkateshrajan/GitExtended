@@ -1056,3 +1056,6 @@ dkms.conf
 # vcpkg install directory
 vcpkg_installed/
 
+# don't want .vscode
+.vscode/
+
