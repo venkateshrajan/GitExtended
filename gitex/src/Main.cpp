@@ -5,6 +5,15 @@
 #include "git_operation.h"
 #include <iterator>
 
+// TODO: Move this into pch.h
+#ifdef __unix__
+#include <unistd.h>
+#elif defined _WIN32
+struct IUnknown; // why is windows making me do this?
+#include <windows.h>
+#define sleep(x) Sleep(1000 * (x))
+#endif
+
 void DiffCommand(args::Subparser &parser) {
   args::ValueFlag<std::string> copy(parser, 
                                     "", 
