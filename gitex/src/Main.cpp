@@ -30,6 +30,28 @@ void DiffCommand(args::Subparser &parser) {
   }
 }
 
+void CopyCommand(args::Subparser &parser) {
+  args::ValueFlag<std::string> input(parser, 
+                                    "", 
+                                    "Copy diff files to the specified location",
+                                    {'i', "input-file"});
+  args::Positional<std::string> path(parser,
+                      "path", "Destination path where the files need to get copied");
+  args::PositionalList<std::string> arguments(parser,
+                      "arguments", "Arguments for copy command");
+  args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
+  parser.Parse();
+
+  gitex::CGitCopyOperation copyop(args::get(input), args::get(path));
+  std::vector<std::string> vec_args;
+  if (arguments) vec_args = args::get(arguments);
+  if (!copyop.run(
+        std::list<std::string>(
+          std::make_move_iterator(std::begin(vec_args)),
+          std::make_move_iterator(std::end(vec_args)))
+        ))
+    std::cout << "gitex diff copy operation failed" << std::endl;
+}
 int main(int argc, char *argv[]) {
   google::InitGoogleLogging(argv[0]);
 
@@ -43,6 +65,7 @@ int main(int argc, char *argv[]) {
     "'gitex command -h' to read about a specfic command");
   args::Group commands(parser, "commands");
   args::Command diff(commands, "diff", "diff related operations", &DiffCommand);
+  args::Command copy(commands, "copy", "copy related operations", &CopyCommand);
   args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
   args::CompletionFlag completion(parser, {"complete"});
 

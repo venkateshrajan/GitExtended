@@ -17,6 +17,7 @@ protected:
   virtual bool prepare(const std::list<std::string>& arguments);
   virtual bool process(const std::list<std::string>& arguments) = 0;
   virtual bool finalize(const std::list<std::string>& arguments);
+  bool copy_item(const std::string& item, const std::string& path);
 
   std::shared_ptr<IGit> git;
   std::string root;
@@ -29,11 +30,20 @@ public:
 
 protected:
   virtual bool process(const std::list<std::string>& arguments) override;
-  virtual bool process_item(const std::string& rel_path);
-  virtual std::string get_cvs_directory_name();
 
   std::string copyPath;
 };
 
+
+class CGitCopyOperation : public IGitOperation{
+public:
+  CGitCopyOperation(const std::string& inputfile, const std::string& path);
+
+protected:
+  virtual bool process(const std::list<std::string>& arguments) override;
+
+  std::string inputfile;
+  std::string copyPath;
+};
 
 }

@@ -3,8 +3,13 @@
 
 #include "git_wrapper.h"
 #include "glog/logging.h"
+#include <boost/algorithm/string/trim.hpp>
+#include <fstream>
+#include <string>
 
 namespace gitex {
+
+#define CVS "CVS"
 
 IGitOperation::IGitOperation() {
     git = std::make_shared<CGitCommand>("git");
@@ -45,37 +50,11 @@ bool IGitOperation::finalize(const std::list<std::string>& arguments) {
   return true;
 }
 
-
-
-CGitDiffOperation::CGitDiffOperation(const std::string& copyPath) :
-  IGitOperation(),
-  copyPath(copyPath) {
-  
-}
-
-
-bool CGitDiffOperation::process(const std::list<std::string>& arguments)  {
-  gitex::FileStatusMap files;
-  if (!git->diff_namestatus(files, arguments)) {
-    LOG(ERROR) << "Failed to get diff";
-    return false;
-  }
-
-  for (auto const & [relPath, itemStatus]: files) {
-    LOG(INFO) << "Processing " << relPath << " with status " << itemStatus;
-    if (!process_item(relPath)) continue;
-  }
-
-  LOG(INFO) << "Completed the diff command successfully";
-  return true;
-}
-
-
-bool CGitDiffOperation::process_item(const std::string& rel_path) {
+bool IGitOperation::copy_item(const std::string& item, const std::string& path) {
   std::filesystem::path src(root);
-  src /= std::filesystem::path(rel_path);
-  std::filesystem::path dest(copyPath);
-  dest /= std::filesystem::path(rel_path);
+  src /= std::filesystem::path(item);
+  std::filesystem::path dest(path);
+  dest /= std::filesystem::path(item);
 
   LOG(INFO) << "Copying " << src.string() << " to " << dest.string();
   if (!std::filesystem::exists(src)) {
@@ -109,9 +88,9 @@ bool CGitDiffOperation::process_item(const std::string& rel_path) {
   // copy cvs directory for this item
   if (!std::filesystem::is_directory(src)) {
     std::filesystem::path src_cvs = src.parent_path();
-    src_cvs /= std::filesystem::path(get_cvs_directory_name());
+    src_cvs /= std::filesystem::path(CVS);
     std::filesystem::path dest_cvs = dest.parent_path();
-    dest_cvs /= std::filesystem::path(get_cvs_directory_name());
+    dest_cvs /= std::filesystem::path(CVS);
     if (std::filesystem::exists(src_cvs)) {
       std::filesystem::copy(src_cvs, dest_cvs, co, ec);
       if (ec) {
@@ -130,8 +109,56 @@ bool CGitDiffOperation::process_item(const std::string& rel_path) {
 }
 
 
-std::string CGitDiffOperation::get_cvs_directory_name() {
-  return "CVS";
+CGitDiffOperation::CGitDiffOperation(const std::string& copyPath) :
+  IGitOperation(),
+  copyPath(copyPath) {
+  
+}
+
+
+bool CGitDiffOperation::process(const std::list<std::string>& arguments)  {
+  gitex::FileStatusMap files;
+  if (!git->diff_namestatus(files, arguments)) {
+    LOG(ERROR) << "Failed to get diff";
+    return false;
+  }
+
+  for (auto const & [relPath, itemStatus]: files) {
+    LOG(INFO) << "Processing " << relPath << " with status " << itemStatus;
+    if (!copy_item(relPath, copyPath)) continue;
+  }
+
+  LOG(INFO) << "Completed the diff command successfully";
+  return true;
+}
+
+
+
+CGitCopyOperation::CGitCopyOperation(const std::string& inputfile, const std::string& path) :
+  IGitOperation(),
+  inputfile(inputfile),
+  copyPath(path) {
+  
+}
+
+
+bool CGitCopyOperation::process(const std::list<std::string>& arguments)  {
+  std::ifstream ifs;
+  ifs.open(inputfile);
+  if (!ifs.good()) {
+    LOG(ERROR) << "Failed to open input file" << inputfile;
+    return false;
+  }
+
+  std::string line;
+  while (std::getline(ifs, line)) {
+    boost::trim(line);
+    LOG(INFO) << "Processing " << line;
+    if (!copy_item(line, copyPath)) continue;
+  }
+
+  LOG(INFO) << "Completed the diff command successfully";
+  return true;
 }
 
 
